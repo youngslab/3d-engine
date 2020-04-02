@@ -32,8 +32,7 @@
 #
 
 
-
-find_path( GLFW_INCLUDE_DIR 
+find_path(GLFW_INCLUDE_DIR 
     NAMES
         GLFW/glfw3.h
     HINTS
@@ -50,9 +49,11 @@ find_path( GLFW_INCLUDE_DIR
         /usr/local/include
         /usr/include/GL
         /usr/include
+				/include
     DOC 
         "The directory where GLFW/glfw3.h resides"
 )
+
 
 
 if (WIN32)
@@ -115,7 +116,14 @@ else ()
         set(GLFW_iokit_LIBRARY "-framework IOKit" CACHE STRING "IOKit framework for OSX")
     else ()
         # (*)NIX
-        
+			 # WAYLANDS
+       find_package(ECM)
+
+       if(${ECM_FOUND})
+          list(APPEND CMAKE_MODULE_PATH "${ECM_MODULE_PATH}")
+          find_package(Wayland)
+        endif()
+
         find_package(Threads REQUIRED)
 
         find_library( GLFW_glfw_LIBRARY
@@ -128,6 +136,7 @@ else ()
                 "${GLFW_LOCATION}/lib/x11"
                 "$ENV{GLFW_LOCATION}/lib/x11"
             PATHS
+								/lib
                 /usr/lib64
                 /usr/lib
                 /usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}
@@ -151,7 +160,8 @@ if(GLFW_INCLUDE_DIR)
                             "${GLFW_x11_LIBRARY}"
                             "${GLFW_cocoa_LIBRARY}"
                             "${GLFW_iokit_LIBRARY}"
-                            "${GLFW_corevideo_LIBRARY}" )
+                            "${GLFW_corevideo_LIBRARY}"
+														Threads::Threads)
         set( GLFW_FOUND "YES" )
         set (GLFW_LIBRARY "${GLFW_LIBRARIES}")
         set (GLFW_INCLUDE_PATH "${GLFW_INCLUDE_DIR}")
@@ -196,9 +206,6 @@ endif(GLFW_INCLUDE_DIR)
 
 include(FindPackageHandleStandardArgs)
 
-
-
-
 mark_as_advanced(
   GLFW_INCLUDE_DIR
   GLFW_LIBRARIES
@@ -206,7 +213,6 @@ mark_as_advanced(
   GLFW_cocoa_LIBRARY
 )
 
-if(${GLFW_FOUND})
 find_package_handle_standard_args(GLFW 
     REQUIRED_VARS
         GLFW_INCLUDE_DIR
@@ -214,18 +220,17 @@ find_package_handle_standard_args(GLFW
     VERSION_VAR
         GLFW_VERSION
 )
-endif()
+
+message("GLFW_INCLUDE_DIR: " ${GLFW_INCLUDE_DIR} )
+message("GLFW_LIBRARIES: " ${GLFW_LIBRARIES} )
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.0")
 	if(NOT TARGET glfw::glfw)
 		if(${GLFW_FOUND} )
 			add_library(glfw::glfw INTERFACE IMPORTED)
-			if(GLFW_INCLUDE_DIR)
-				set_target_properties( glfw::glfw PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-					"${GLFW_INCLUDE_DIR}")
-			endif()
+			set_property(TARGET glfw::glfw PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${GLFW_INCLUDE_DIR}")
 			set_property(TARGET glfw::glfw PROPERTY INTERFACE_LINK_LIBRARIES
-					"${GLFW_LIBRARIES}")
+				${GLFW_LIBRARIES} Wayland::Client)
 		elseif(TARGET glfw)
 			set(GLFW_FOUND TRUE)
 			add_library(glfw::glfw INTERFACE IMPORTED)
