@@ -5,6 +5,9 @@ include(CMakeFindDependencyMacro)
 # set(my-config-var @my-config-var@)
 
 # Same syntax as find_package
+find_dependency(glm  REQUIRED)
+find_dependency(glad REQUIRED)
 
-include("${CMAKE_CURRENT_LIST_DIR}/olgTargets.cmake")
+
+include("${CMAKE_CURRENT_LIST_DIR}/oglTargets.cmake")
 
