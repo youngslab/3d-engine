@@ -1,11 +1,11 @@
 
-find_package(glfw REQUIRED)
+find_package(glfw3 REQUIRED)
 
 add_executable(ogl-example
   main.cpp
 )
 
-target_link_libraries(ogl-example ogl glfw::glfw)
+target_link_libraries(ogl-example ogl glfw)
 
 set(fragment_shader coordinate.fs)
 set(vertex_shader   coordinate.vs)

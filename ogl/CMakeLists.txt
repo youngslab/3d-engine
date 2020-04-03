@@ -22,11 +22,11 @@ add_library(ogl STATIC
 target_link_libraries(ogl PUBLIC glad::glad glm::glm
 			fmt::fmt stb::stb stdc++fs)
 
-target_include_directories(ogl PUBLIC 
-	 PUBLIC 
-        $<INSTALL_INTERFACE:include>    
+target_include_directories(ogl PUBLIC
+   PUBLIC
+        $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-	)
+  )
 
 target_compile_features(ogl PUBLIC cxx_std_17)
 
@@ -53,12 +53,13 @@ install(EXPORT oglTargets
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
     oglConfigVersion.cmake
-		VERSION ${ogl_VERSION}
+    VERSION ${ogl_VERSION}
     COMPATIBILITY AnyNewerVersion
     )
 
 configure_file(${CMAKE_SOURCE_DIR}/CMake/oglConfig.cmake.in
-                 olgConfig.cmake @ONLY)
+                 oglConfig.cmake @ONLY)
+
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/oglConfig.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/oglConfigVersion.cmake"
         DESTINATION lib/cmake/ogl
