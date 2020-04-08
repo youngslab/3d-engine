@@ -38,6 +38,7 @@ auto load_shader(std::string const &filepath) -> std::string {
 
   std::ifstream ifs(p.string());
   if (!ifs.is_open()) {
+    fmt::print("failed to load shader {}", filepath);
     return "";
   }
 

@@ -1,12 +1,20 @@
 
-find_package(glfw3 REQUIRED)
+find_package(glfw3 QUIET)
+if(NOT ${glfw3_FOUND})
+  find_package(glfw REQUIRED)
+endif()
+if(NOT TARGET glfw::glfw)
+  add_library(glfw::glfw INTERFACE IMPORTED)
+  target_link_libraries(glfw::glfw INTERFACE glfw3)
+endif()
+
 find_package(fmt REQUIRED)
 
 add_executable(ogl-example
   main.cpp
 )
 
-target_link_libraries(ogl-example ogl glfw fmt::fmt)
+target_link_libraries(ogl-example ogl glfw::glfw fmt::fmt)
 
 set(fragment_shader coordinate.fs)
 set(vertex_shader   coordinate.vs)

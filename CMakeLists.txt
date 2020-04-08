@@ -33,24 +33,33 @@ set(ogl_SOURCE_FILES
   src/shader.cpp
   src/texture.cpp
   src/resource.cpp
- src/indexbuffer.cpp
- src/vertexattribute.cpp
-src/vertexbuffer.cpp
-src/vertexarray.cpp
-src/program.cpp
-src/framebuffer.cpp
-src/loader.cpp)
+  src/indexbuffer.cpp
+  src/vertexattribute.cpp
+  src/vertexbuffer.cpp
+  src/vertexarray.cpp
+  src/program.cpp
+  src/framebuffer.cpp
+  src/loader.cpp)
 
 add_library(ogl ${ogl_SOURCE_FILES})
 
 target_link_libraries(ogl
-	PUBLIC glad::glad glm::glm
-	PRIVATE fmt::fmt stb::stb stdc++fs)
+  PUBLIC
+    glad::glad
+    glm::glm
+  PRIVATE
+    $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
+)
 
-target_include_directories(ogl PUBLIC
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  )
+target_include_directories(ogl
+  PUBLIC
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  PRIVATE
+    $<TARGET_PROPERTY:stb::stb,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:fmt::fmt,INTERFACE_INCLUDE_DIRECTORIES>
+)
+
 
 target_compile_features(ogl PUBLIC cxx_std_17)
 
@@ -95,8 +104,4 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/oglConfig.cmake"
 if(${OGL_EXAMPLE})
 add_subdirectory(example)
 endif()
-
-
-
-
 

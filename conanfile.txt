@@ -3,13 +3,8 @@ fmt/6.0.0@bincrafters/stable
 glm/0.9.9.5@g-truc/stable
 glad/0.1.29@bincrafters/stable
 stb/20190512@conan/stable
+glfw/3.3.2@bincrafters/stable
 
 [generators]
 cmake_find_package
 
-[options]
-glad:spec=gl
-glad:profile=compatibility
-glad:api_type=gl
-glad:api_version=3.0
-glad:no_loader=False
