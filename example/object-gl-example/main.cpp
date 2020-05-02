@@ -8,6 +8,8 @@
 #include <ogl/texture.h>
 #include <ogl/vertexarray.h>
 #include <ogl/vertexbuffer.h>
+#include <ogl/render.h>
+#include <ogl/param.h>
 
 #include <ogl/loader.h>
 
@@ -47,7 +49,7 @@ int main() {
 #ifdef __APPLE__
   glfwWindowHint(
       GLFW_OPENGL_FORWARD_COMPAT,
-      GL_TRUE);  // uncomment this statement to fix compilation on OS X
+      GL_TRUE); // uncomment this statement to fix compilation on OS X
 #endif
 
   // glfw window creation
@@ -69,7 +71,7 @@ int main() {
     return -1;
   }
 
-	fmt::print("GL VERSION: {}.{}\n", GLVersion.major, GLVersion.minor);
+  fmt::print("GL VERSION: {}.{}\n", GLVersion.major, GLVersion.minor);
 #ifdef GLAD_DEBUG
   glad_set_post_callback(_post_call_callback_default);
 #endif
@@ -132,10 +134,10 @@ int main() {
 		   ogl::load_shader("res/shader/coordinate.vs")};
   ogl::program shader{vert, frag};
   // TODO: improve how to set multiple uniforms without binding explicitly.
-  shader.bind();
-  shader.set("texture1", 0);
-  shader.set("texture2", 1);
-  shader.unbind();
+  // shader.bind();
+  // shader.set("texture1", 0);
+  // shader.set("texture2", 1);
+  // shader.unbind();
 
   ogl::vertex_buffer vbo{vertices, sizeof(vertices)};
   ogl::vertex_attr pos{GL_FLOAT, 3, false};
@@ -144,7 +146,7 @@ int main() {
   ogl::vertex_array vao{vbo, {pos, tex}};
 
   // TODO: improve how to load the texture.
-  auto[w, h, f, t, d] = ogl::load_texture("res/image/container.jpg");
+  auto [w, h, f, t, d] = ogl::load_texture("res/image/container.jpg");
   ogl::texture image(w, h, f, t, d.get());
 
   std::tie(w, h, f, t, d) = ogl::load_texture("res/image/awesomeface.png");
@@ -183,15 +185,25 @@ int main() {
     projection =
 	glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
     // draw our first triangle
-    shader.bind();
-    shader.set("model", model);
-    shader.set("view", view);
-    shader.set("projection", projection);
-    glActiveTexture(GL_TEXTURE0);
-    image.bind();
-    glActiveTexture(GL_TEXTURE0 + 1);
-    image2.bind();
-    vao.draw();
+    // glActiveTexture(GL_TEXTURE0);
+    // image.bind();
+    // glActiveTexture(GL_TEXTURE0 + 1);
+    // image2.bind();
+
+    // shader.bind();
+    // shader.set("model", model);
+    // shader.set("view", view);
+    // shader.set("projection", projection);
+
+    // vao.draw();
+
+    // goal of render function.
+    ogl::render(vao, shader, ogl::param("view", view),
+		ogl::param("model", model),
+		ogl::param("projection", projection),
+		ogl::param("texture1", image), ogl::param("texture2", image2));
+    // param<OGL_CAMERA_VIEW, glm::mat4> view = glm::perspective()..
+    // render(vao, shader, view, model, view,
 
     // glBindVertexArray(0); // no need to unbind it every time
 

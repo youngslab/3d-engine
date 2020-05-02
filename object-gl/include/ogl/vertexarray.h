@@ -33,4 +33,7 @@ private:
   auto data(vertex_buffer const &vbo, std::vector<vertex_attr> const &attrs)
       -> void;
 };
+
+static auto draw(vertex_array const &va) { va.draw(); }
+
 } // namespace ogl
