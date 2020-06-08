@@ -185,17 +185,6 @@ int main() {
     projection =
 	glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
     // draw our first triangle
-    // glActiveTexture(GL_TEXTURE0);
-    // image.bind();
-    // glActiveTexture(GL_TEXTURE0 + 1);
-    // image2.bind();
-
-    // shader.bind();
-    // shader.set("model", model);
-    // shader.set("view", view);
-    // shader.set("projection", projection);
-
-    // vao.draw();
 
     // goal of render function.
     ogl::render(vao, shader, ogl::param("view", view),
