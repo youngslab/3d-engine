@@ -3,93 +3,29 @@
 
 namespace ox {
 
-template<typename TypeList, typename T>
-struct has : std::false_type {};
 
-template<template<typename...> class TypeList, typename T, typename... Us>
-struct has <TypeList<T, Us...>, T> : std::true_type { };
-
-template<template<typename...> class TypeList, typename T, typename U, typename... Us>
-struct has <TypeList<U, Us...>, T> : has<TypeList<Us...>, T> {};
-
-// 2. min
-// 3. compare
-
-template<typename T>
-struct has_order {
-	static constexpr bool value = has_order;
-}
-
-
-template<typename T, typename U, typename enabled = is_defined<T> && is_defined<U> >
-auto compare(T, U) -> bool{
-	return order<T>() > order<U>();
-}
-
-template<typename T, typename U>
-class _compare {
-  using type = std::if
-};
-}
-
-template<template<class typelist>, typename... Ts>
-class min {
- 
-}
-
-
-
-
-// option to have its classes.
-class enum PROPERTY {
-  OX_SHADABLE,
-  OX_PROGRAMABLE,
-  OX_COMPONENT_DRAWABLE,
-};
-
-//
-class drawable {
-public:
-  virtual ~drawable() {}
-  virtual auto draw() = 0;
-};
-
-class programable : ogl::program {
-public:
-  virtual ~programable() {}
-  // ogl::prgoram define set(name, value) interfaces.
-}
-
-class shadable {
-public:
-  virtual ~shadable(){};
-  virtual auto config(programable &p);
-};
-
-template <typename... Ts> class component : public Ts... {
-  virtual ~component() {}
-}
-
-// drawable, programable, combination<shadable, updatable>
-
-// 5, 4,3,2,1
-1,
-    2, 3 = > {1}, {2}, {3}, {1, 2}, {1, 3}, {2, 3}, {
-  1, 2, 3
-}
-
-// 2 ^ n - 1
-8->2 ^ 8 - 1
-
-	   class drawable {};
+// less
+class drawable {};
 class shadable {};
 class updatable {};
 class inputable {};
 
-// Aspect
-enum class aspect {
-  drawable
-}
+// relation
+struct aspect_relation{
+	auto order(drawable) { return 0;}
+	auto order(shadable) { return 1;}
+	auto order(updatable) { return 2;}
+	auto order(inputable) { return 3;}
+
+	template<typename T, typename U>
+  auto compare(T, U) -> bool{
+	  return order(std::declval<T>()) < order(std::declval<U>());
+	}
+};
+
+
+using component = std::variant<std::shared_ptr<drawable>, 
+
 
 // Combination of types. But one for each aspects.
 
