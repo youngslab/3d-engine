@@ -3,16 +3,41 @@
 namespace meta{
 
 
-// Operate can't be a template. The Metafunction
-template<typename TypeList, typename Op>
-struct foreach;
+// com<a, b, c>
+
+namespace detail{
+
+template<typename T, typename Container=std::tuple<>>
+struct add_{
+	template<typename U>
+	constexpr static op(U)-> Container<T, U>;
+}
 
 
-template<template <typename...> typename TypeList, typename T, typename... Ts, typename Op>
-struct foreach<TypeList<T, Ts...>, Op> {
-  // uusing type = pack_t<decltype(std::declval<Op>()(std::declval<T>())), typename foreach<TypeList<Ts...>, Op>::type>;
-	using head_ = decltype(Op::operate<T>());
-  using type = pack_t<decltype(std::declval<Op>()(std::declval<T>())), typename foreach<TypeList<Ts...>, Op>::type>;
+// currying
+template <typename T>
+struct packer {
+	template<typename U>
+	constexpr static auto op() -> pack_t<T, U>;
+}
+
+
+template<
+
+
+// metafunction : func_t<arg>
+//
+
+// currying
+template<typename MetaFunc, typename 
+struct curried{
+
+
+};
+
+foreach<tail<Xs>, packer<U> >
+
+
 }
 
 

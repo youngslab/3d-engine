@@ -2,6 +2,7 @@
 
 #include "has.hpp"
 #include "pack.hpp"
+#include "traits.hpp"
 
 namespace meta {
 
@@ -15,12 +16,17 @@ struct _unique<TypeList<T>> {
   using type = TypeList<T>;
 };  //
 
+template <>
+struct _unique<nil> {
+  using type = nil;
+};
+
 template <template <typename...> typename TypeList, typename T, typename... Ts>
 struct _unique<
     TypeList<T, Ts...>,
     std::enable_if_t<!has_v<TypeList<Ts...>, T> && sizeof...(Ts) != 0>> {
   // using type = insert_t<typename _unique<TypeList<Ts...>>::type, T>;
-	 using type = pack_t<typename _unique<TypeList<Ts...>>::type, T>;
+  using type = pack_t<typename _unique<TypeList<Ts...>>::type, T>;
 };
 
 template <template <typename...> typename TypeList, typename T, typename... Ts>
@@ -38,4 +44,4 @@ struct unique {
 
 template <typename TypeList>
 using unique_t = typename unique<TypeList>::type;
-}
+}  // namespace meta

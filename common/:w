@@ -1,0 +1,21 @@
+#pragma once
+
+namespace meta {
+
+template <typename Func, typename TypeList, typename Enable = void>
+struct apply;
+
+// TODO: what if metafunction's out put is value?
+template <template <typename...> typename Func, typename... Args,
+          template <typename...> typename TypeList, typename..Ts>
+struct apply<Func<Args...>, TypeList<Ts...>,
+             std::enable_if_t<!is_generator<Func<Args...>>>> {
+  using type = Func<Ts...>::type;
+}
+
+template <template <typename> typename Func, typename Arg, typename T>
+struct apply<Func<Arg>, T> {
+  using type = Func<T>::type;
+}
+
+}  // namespace meta

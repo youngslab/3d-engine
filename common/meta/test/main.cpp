@@ -1,59 +1,86 @@
-
 #include <cassert>
 #include <iostream>
+#include <meta/meta.hpp>
 #include <tuple>
 #include <type_traits>
-
-#include <meta/meta.hpp>
 
 auto test_min() -> void;
 auto test_select() -> void;
 auto test_pack() -> void;
 auto test_remove() -> void;
 auto test_sort() -> void;
-auto test_foreach()-> void;
+auto test_foreach() -> void;
+auto test_apply() -> void;
+auto test_invoke() -> void;
 
-int main() { 
-	test_foreach();
-	//test_min();
-	//test_select();
-	//test_pack();
-	//test_remove();
-	//test_sort();
-	return 0; 
+int main() {
+  test_invoke();
+  test_apply();
+  test_foreach();
+  test_min();
+  test_select();
+  test_pack();
+  test_remove();
+  test_sort();
+  return 0;
 }
 
-template<typename U, typename Convert>
-struct convert{
-  using type = decltype(Convert::op(std::declval<U>()));
-};
-
+auto test_apply() -> void {
+  // using a = meta::apply_t<meta::unique<meta::nil>, std::tuple<int, char,
+  // int>>;
+}
 
 template <typename T, typename U>
-struct converter{
-	template<typename K, typename Enable = std::enable_if_t<std::is_same_v<T,K>>>
-	constexpr static auto op(K) -> U;
-	
-	template<typename K, typename Enable = std::enable_if_t<!std::is_same_v<T,K>>>
-	constexpr static auto op(K) -> K;
+struct convert {
+  template <typename K,
+            typename Enable = std::enable_if_t<std::is_same_v<T, K>>>
+  constexpr static auto op(K) -> U;
+
+  template <typename K,
+            typename Enable = std::enable_if_t<!std::is_same_v<T, K>>>
+  constexpr static auto op(K) -> K;
+
+  template <typename K,
+            typename Enable = std::enable_if_t<std::is_same_v<T, K>>>
+  constexpr static auto op() -> U;
+
+  template <typename K,
+            typename Enable = std::enable_if_t<!std::is_same_v<T, K>>>
+  constexpr static auto op() -> K;
 };
 
-auto test_foreach()-> void {
-  auto res =
-      std::is_same_v<meta::foreach<std::tuple<int, char>, converter<int, char>>::type,
-                     std::tuple<char, char>>;
+auto test_invoke() -> void {
+  auto res = std::is_same_v<
+      meta::invoke_t<meta::unique<meta::nil>, std::tuple<int, char, int>>,
+      std::tuple<int, char>>;
+  assert(res);
 
-	assert(res);
+  res = meta::has_operator_v<meta::unique<meta::nil>, int>;
+  assert(!res);
 
-  res =
-      std::is_same_v<meta::foreach<std::tuple<int, int>, converter<int, char>>::type,
-                     std::tuple<char, char>>;
-	assert(res);
-  
-	res =
-      std::is_same_v<meta::foreach<std::tuple<char, char>, converter<int, char>>::type,
-                     std::tuple<char, char>>;
-	assert(res);
+  res = meta::has_operator_v<convert<int, char>, int>;
+  assert(res);
+
+  res = meta::has_type_v<convert<int, char>>;
+  assert(!res);
+}
+
+auto test_foreach() -> void {
+  auto res = std::is_same_v<
+      meta::foreach<std::tuple<int, char>, convert<int, char>>::type,
+      std::tuple<char, char>>;
+
+  assert(res);
+
+  res = std::is_same_v<
+      meta::foreach<std::tuple<int, int>, convert<int, char>>::type,
+      std::tuple<char, char>>;
+  assert(res);
+
+  res = std::is_same_v<
+      meta::foreach<std::tuple<char, char>, convert<int, char>>::type,
+      std::tuple<char, char>>;
+  assert(res);
 }
 auto test_sort() -> void {
   auto res =
@@ -132,8 +159,7 @@ auto test_unqiue() {
   std::cout << "tuple  : " << typeid(std::tuple<int, float>).name() << "\n";
   std::cout
       << "unique : "
-      << typeid(
-             meta::unique<std::tuple<int, int, int, float, int, int>>::type)
+      << typeid(meta::unique<std::tuple<int, int, int, float, int, int>>::type)
              .name()
       << "\n";
 }
