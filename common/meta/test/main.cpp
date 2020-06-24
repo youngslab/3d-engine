@@ -12,6 +12,7 @@ auto test_sort() -> void;
 auto test_foreach() -> void;
 auto test_apply() -> void;
 auto test_invoke() -> void;
+auto test_curry() -> void;
 
 int main() {
   test_invoke();
@@ -22,7 +23,22 @@ int main() {
   test_pack();
   test_remove();
   test_sort();
+  test_curry();
   return 0;
+}
+
+// curry
+auto test_curry() -> void {
+  using int_inserter =
+      meta::rcurry<meta::push_front<meta::nil, meta::nil>, int>;
+
+  auto res = std::is_same_v<meta::invoke_t<int_inserter, std::tuple<char>>,
+                            std::tuple<int, char>>;
+  assert(res);
+
+  res = std::is_same_v<meta::invoke_t<int_inserter, std::tuple<bool, char>>,
+                       std::tuple<int, bool, char>>;
+  assert(res);
 }
 
 auto test_apply() -> void {
