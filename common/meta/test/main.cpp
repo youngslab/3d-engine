@@ -3,6 +3,7 @@
 #include <meta/meta.hpp>
 #include <tuple>
 #include <type_traits>
+#include <variant>
 
 auto test_min() -> void;
 auto test_select() -> void;
@@ -13,6 +14,7 @@ auto test_foreach() -> void;
 auto test_apply() -> void;
 auto test_invoke() -> void;
 auto test_curry() -> void;
+auto test_subset() -> void;
 
 int main() {
   test_invoke();
@@ -24,7 +26,32 @@ int main() {
   test_remove();
   test_sort();
   test_curry();
+  test_subset();
   return 0;
+}
+
+auto test_subset() -> void {
+  auto res = std::is_same_v<meta::subset_t<std::variant<>, std::tuple<int>>,
+                            std::variant<std::tuple<int>, std::tuple<>>>;
+
+  assert(res);
+
+  res = std::is_same_v<meta::subset_t<std::variant<>, std::tuple<int, char>>,
+                       std::variant<std::tuple<int, char>, std::tuple<int>,
+                                    std::tuple<char>, std::tuple<>>>;
+
+  assert(res);
+
+  // subsets of<int, char, float>
+  res = std::is_same_v<
+      meta::subset_t<std::variant<>, std::tuple<int, char, float>>,
+      std::variant<std::tuple<int, char, float>, std::tuple<int, char>,
+                   std::tuple<int, float>, std::tuple<int>,
+                   std::tuple<char, float>, std::tuple<char>, std::tuple<float>,
+                   std::tuple<>>>;
+
+  // assert
+  assert(res);
 }
 
 // curry
@@ -99,17 +126,17 @@ auto test_foreach() -> void {
   assert(res);
 }
 auto test_sort() -> void {
-  auto res =
-      std::is_same_v<meta::sort_t<std::tuple<int, char>, typesize_comparer>,
-                     std::tuple<char, int>>;
+  auto res = std::is_same_v<
+      meta::sort_t<std::tuple<int, char>, meta::typesize_comparer>,
+      std::tuple<char, int>>;
   assert(res);
 
   res = std::is_same_v<
-      meta::sort_t<std::tuple<int, float, char>, typesize_comparer>,
+      meta::sort_t<std::tuple<int, float, char>, meta::typesize_comparer>,
       std::tuple<char, int, float>>;
   assert(res);
 
-  res = std::is_same_v<meta::sort_t<std::tuple<>, typesize_comparer>,
+  res = std::is_same_v<meta::sort_t<std::tuple<>, meta::typesize_comparer>,
                        std::tuple<>>;
   assert(res);
 }
@@ -156,20 +183,23 @@ auto test_select() -> void {
 
 auto test_min() -> void {
   std::cout << "min: "
-            << typeid(min_t<std::tuple<int, float>, typesize_comparer>).name()
+            << typeid(
+                   meta::min_t<std::tuple<int, float>, meta::typesize_comparer>)
+                   .name()
             << "\n";
   struct float2 {
     float a, b;
   };
-  std::cout
-      << "min: "
-      << typeid(min_t<std::tuple<int, float, float2>, typesize_comparer>).name()
-      << "\n";
-  std::cout
-      << "min: "
-      << typeid(min_t<std::tuple<int, float, char, float2>, typesize_comparer>)
-             .name()
-      << "\n";
+  std::cout << "min: "
+            << typeid(meta::min_t<std::tuple<int, float, float2>,
+                                  meta::typesize_comparer>)
+                   .name()
+            << "\n";
+  std::cout << "min: "
+            << typeid(meta::min_t<std::tuple<int, float, char, float2>,
+                                  meta::typesize_comparer>)
+                   .name()
+            << "\n";
 }
 auto test_unqiue() {
   std::cout << "tuple  : " << typeid(std::tuple<int, float>).name() << "\n";

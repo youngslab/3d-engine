@@ -1,6 +1,9 @@
 #pragma once
 
 #include <type_traits>
+#include "invoke.hpp"
+
+namespace meta {
 
 namespace detail {
 
@@ -11,7 +14,7 @@ struct _min;
 template <template <typename...> typename TypeList, typename T, typename Min,
           typename Comparer>
 struct _min<TypeList<T>, Min, Comparer> {
-  using type = std::conditional_t<Comparer::compare(T{}, Min{}), T, Min>;
+  using type = std::conditional_t<invoke_t<Comparer, T, Min>::value, T, Min>;
 };
 
 // partail specailization
@@ -36,7 +39,8 @@ using min_t = typename min<TypeList, Comparer>::type;
 
 struct typesize_comparer {
   template <typename T, typename U>
-  constexpr static auto compare(T, U) -> bool {
-    return sizeof(T) < sizeof(U);
-  }
+  constexpr static auto op()
+      -> std::conditional_t<(sizeof(T) < sizeof(U)), std::true_type,
+                            std::false_type>;
 };
+}  // namespace meta

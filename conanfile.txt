@@ -4,6 +4,7 @@ glm/0.9.9.5@g-truc/stable
 glad/0.1.29@bincrafters/stable
 stb/20190512@conan/stable
 glfw/3.3.2@bincrafters/stable
+boost_type_index/1.69.0@bincrafters/stable
 
 [generators]
 cmake_find_package

@@ -1,6 +1,8 @@
 #pragma once
 
-namespace meta{
+#include <type_traits>
+
+namespace meta {
 
 template <typename TypeList, typename T>
 struct has : std::false_type {};
@@ -14,4 +16,4 @@ struct has<TypeList<U, Us...>, T> : has<TypeList<Us...>, T> {};
 
 template <typename TypeList, typename T>
 inline constexpr bool has_v = has<TypeList, T>::value;
-}
+}  // namespace meta

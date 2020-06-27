@@ -1,8 +1,7 @@
-
-#include <type_traite>
+#include <meta/meta.hpp>
+#include <variant>
 
 namespace ox {
-
 
 // less
 class drawable {};
@@ -11,37 +10,60 @@ class updatable {};
 class inputable {};
 
 // relation
-struct aspect_relation{
-	auto order(drawable) { return 0;}
-	auto order(shadable) { return 1;}
-	auto order(updatable) { return 2;}
-	auto order(inputable) { return 3;}
+struct aspect_relation {
+  template <typename T>
+  struct order;
 
-	template<typename T, typename U>
-  auto compare(T, U) -> bool{
-	  return order(std::declval<T>()) < order(std::declval<U>());
-	}
+  template <>
+  struct order<drawable> {
+    constexpr static int value = 1;
+  };
+
+  template <>
+  struct order<shadable> {
+    constexpr static int value = 2;
+  };
+
+  template <>
+  struct order<updatable> {
+    constexpr static int value = 3;
+  };
+  template <>
+  struct order<inputable> {
+    constexpr static int value = 4;
+  };
+
+  template <typename T>
+  constexpr static int order_v = order<T>::value;
+
+  template <typename T, typename U>
+  constexpr static auto op()
+      -> std::conditional_t<((order_v<T>) < (order_v<U>)), std::true_type,
+                            std::false_type>;
 };
 
+template <typename... Ts>
+struct component {};
 
-using component = std::variant<std::shared_ptr<drawable>, 
-
-
-// Combination of types. But one for each aspects.
-
-using comp = std::variant<std::shared_ptr<component<drawable>>,
-			  std::shared_ptr<component<programable>>,
-			  std::shared_ptr<shadable>, std::shared_ptr<updatable>,
-			  std::shared_ptr<compositable<shadable, updatable>>>;
-
-class entity {
-public:
-  auto add(component const &c) { cs_s.push_back(c); }
-
-private:
-  std::vector<component> cs_;
+template <typename... Ts>
+struct make_component {
+  using type = meta::sort_t<component<Ts...>, aspect_relation>;
 };
-} // namespace ox
+
+template <typename... Ts>
+using make_component_t = typename make_component<Ts...>::type;
+
+using components_ =
+    meta::subset_t<std::variant<>,
+                   make_component_t<drawable, shadable, inputable, updatable>>;
+
+struct make_shared_ptr {
+  template <typename T>
+  constexpr static auto op() -> std::shared_ptr<T>;
+};
+using components = meta::foreach_t<components_, make_shared_ptr>;
+
+}  // namespace ox
 
 // Example
 /*

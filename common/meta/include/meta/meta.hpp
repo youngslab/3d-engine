@@ -7,4 +7,5 @@
 #include "push.hpp"
 #include "select.hpp"
 #include "sort.hpp"
+#include "subset.hpp"
 #include "unique.hpp"
